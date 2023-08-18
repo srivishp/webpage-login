@@ -30,10 +30,6 @@ const passwordReducer = (state, action) => {
 };
 
 const Login = (props) => {
-  // const [enteredEmail, setEnteredEmail] = useState("");
-  // const [emailIsValid, setEmailIsValid] = useState();
-  //const [enteredPassword, setEnteredPassword] = useState("");
-  //const [passwordIsValid, setPasswordIsValid] = useState();
   const [formIsValid, setFormIsValid] = useState(false);
 
   // Takes 3 args: const [state, dispatchFn] = useReducer(reducerFn, initialState, initFn)
@@ -61,12 +57,7 @@ const Login = (props) => {
   const { isValid: emailIsValid } = emailState;
   const { isValid: passwordIsValid } = passwordState;
 
-  // useEffect to detect change of email and password once
-  // and not for every keystroke. Avoids duplication of code too
   useEffect(() => {
-    // setting timeout to capture input with delay
-    // used to store data and check later for validity (for example, of an email)
-    // setTimeout is built in. Delay is 500ms
     const identifier = setTimeout(() => {
       console.log("Check form validity");
 
@@ -74,12 +65,9 @@ const Login = (props) => {
       setFormIsValid(emailIsValid && passwordIsValid);
     }, 500);
 
-    //cleanup function: runs before every new execution of side effects function
-    // except before the first side effect execution
     return () => {
       console.log("Cleanup");
-      // cleanup can be used to avoid sending dozens of API requests to a server, just cuz the keystrokes were detected
-      // cleanup unmounts stuff from the DOM
+
       clearTimeout(identifier);
     };
     // Now useEffect will run only if validity changes, but notevery time the value also changes
@@ -90,16 +78,10 @@ const Login = (props) => {
   const emailChangeHandler = (event) => {
     // type indiactes type action that is being dispatched
     dispatchEmail({ type: "USER_INPUT", val: event.target.value });
-
-    // setFormIsValid(emailState.value.includes("@") && passwordState.isValid);
-    // console.log(emailState.value);
   };
 
   const passwordChangeHandler = (event) => {
     dispatchPassword({ type: "USER_INPUT", val: event.target.value });
-
-    // setFormIsValid(emailState.isValid && event.target.value.trim().length > 6);
-    // console.log(passwordState.value);
   };
 
   const validateEmailHandler = () => {
