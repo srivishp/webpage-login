@@ -29,6 +29,7 @@ const Login = (props) => {
     return () => {
       console.log("Cleanup");
       // cleanup can be used to avoid sending dozens of API requests to a server, just cuz the keystrokes were detected
+      // cleanup unmounts stuff from the DOM
       clearTimeout(identifier);
     };
   }, [enteredEmail, enteredPassword]);
