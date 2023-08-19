@@ -1,12 +1,9 @@
-import React, { useState, useEffect, useReducer } from "react";
-// reducer can handle complex/larger states.
-// Reducer can be used if two states are closely dependent on each other
-// or if we are setting state based on values of other states, instead of previousValues of the same state
+import React, { useState, useEffect, useReducer, useContext } from "react";
 import Card from "../UI/Card/Card";
 import classes from "./Login.module.css";
 import Button from "../UI/Button/Button";
+import AuthContext from "../../context/auth-context";
 
-// defining reducer func outside component as it does not require data fropm the component
 const emailReducer = (state, action) => {
   if (action.type === "USER_INPUT") {
     return { value: action.val, isValid: action.val.includes("@") };
@@ -23,18 +20,16 @@ const passwordReducer = (state, action) => {
     return { value: action.val, isValid: action.val.trim().length > 6 };
   }
   if (action.type === "INPUT_BLUR") {
-    // state returns the last/latest value always
     return { value: state.value, isValid: state.value.trim().length > 6 };
   }
   return { value: "", isValid: false };
 };
 
-const Login = (props) => {
+const Login = () => {
   const [formIsValid, setFormIsValid] = useState(false);
+  // We should not use AuthContextProvider, as it is already wrapped around the whole App
+  const authCtx = useContext(AuthContext);
 
-  // Takes 3 args: const [state, dispatchFn] = useReducer(reducerFn, initialState, initFn)
-  // array destructuring same as useState, except we have a func to dispatch an action, not to set state value
-  // initialState and initFn are optional
   const [emailState, dispatchEmail] = useReducer(emailReducer, {
     value: "",
     isValid: null,
@@ -53,7 +48,6 @@ const Login = (props) => {
     };
   }, []);
 
-  // object destructuring, to make code cleaner in useEffect
   const { isValid: emailIsValid } = emailState;
   const { isValid: passwordIsValid } = passwordState;
 
@@ -61,7 +55,6 @@ const Login = (props) => {
     const identifier = setTimeout(() => {
       console.log("Check form validity");
 
-      // validation is done in reducer now
       setFormIsValid(emailIsValid && passwordIsValid);
     }, 500);
 
@@ -70,9 +63,6 @@ const Login = (props) => {
 
       clearTimeout(identifier);
     };
-    // Now useEffect will run only if validity changes, but notevery time the value also changes
-    // Which means optimized code by avoiding unnecessary effect execution
-    // TODO: Always pass specific properties instead of the entire object as a dependency.
   }, [emailIsValid, passwordIsValid]);
 
   const emailChangeHandler = (event) => {
@@ -94,7 +84,7 @@ const Login = (props) => {
 
   const submitHandler = (event) => {
     event.preventDefault();
-    props.onLogin(emailState.value, passwordState.value);
+    authCtx.onLogin(emailState.value, passwordState.value);
   };
 
   return (
